@@ -350,6 +350,21 @@
             "then": {
               "$ref": "#/$defs/LocalServer"
             }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "stream"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "$ref": "#/$defs/StreamServer"
+            }
           }
         ]
       }
@@ -1133,7 +1148,8 @@
             "pubsub",
             "kinesis",
             "trino",
-            "local"
+            "local",
+            "stream"
           ]
         },
         "roles": {
@@ -1688,6 +1704,22 @@
       },
       "required": [
         "path",
+        "format"
+      ]
+    },
+    "StreamServer": {
+      "type": "object",
+      "title": "StreamServer",
+      "properties": {
+        "format": {
+          "type": "string",
+          "description": "The format of the file(s)",
+          "examples": [
+            "pandas"
+          ]
+        }
+      },
+      "required": [
         "format"
       ]
     },

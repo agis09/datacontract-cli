@@ -13,7 +13,9 @@ from datacontract.model.data_contract_specification import DataContractSpecifica
 from datacontract.model.run import Check, Log, ResultEnum, Run
 
 
-def check_soda_execute(run: Run, data_contract: DataContractSpecification, server: Server, spark, tmp_dir):
+def check_soda_execute(
+    run: Run, data_contract: DataContractSpecification, server: Server, spark, tmp_dir, stream_data=None
+):
     from soda.common.config_helper import ConfigHelper
 
     ConfigHelper.get_instance().upsert_value("send_anonymous_usage_stats", False)
@@ -26,10 +28,10 @@ def check_soda_execute(run: Run, data_contract: DataContractSpecification, serve
     run.log_info("Running engine soda-core")
     scan = Scan()
 
-    if server.type in ["s3", "gcs", "azure", "local"]:
-        if server.format in ["json", "parquet", "csv", "delta"]:
+    if server.type in ["s3", "gcs", "azure", "local", "stream"]:
+        if server.format in ["json", "parquet", "csv", "delta", "pandas"]:
             run.log_info(f"Configuring engine soda-core to connect to {server.type} {server.format} with duckdb")
-            con = get_duckdb_connection(data_contract, server, run)
+            con = get_duckdb_connection(data_contract, server, run, stream_data)
             scan.add_duckdb_connection(duckdb_connection=con, data_source_name=server.type)
             scan.set_data_source_name(server.type)
         else:

@@ -6,11 +6,13 @@ from datacontract.export.csv_type_converter import convert_to_duckdb_csv_type
 from datacontract.model.run import Run
 
 
-def get_duckdb_connection(data_contract, server, run: Run):
+def get_duckdb_connection(data_contract, server, run: Run, stream_data=None):
     con = duckdb.connect(database=":memory:")
     path: str = ""
     if server.type == "local":
         path = server.path
+    if server.type == "stream":
+        path = "stream_data"
     if server.type == "s3":
         path = server.location
         setup_s3_connection(con, server)
@@ -25,6 +27,12 @@ def get_duckdb_connection(data_contract, server, run: Run):
         if "{model}" in model_path:
             model_path = model_path.format(model=model_name)
         run.log_info(f"Creating table {model_name} for {model_path}")
+
+        if server.type == "stream":
+            if server.format == "pandas":
+                con.sql(f"""
+                            CREATE VIEW "{model_name}" AS SELECT * FROM {model_path}
+                            """)
 
         if server.format == "json":
             format = "auto"
@@ -82,7 +90,8 @@ def setup_s3_connection(con, server):
 
     if s3_access_key_id is not None:
         if s3_session_token is not None:
-            con.sql(f"""
+            con.sql(
+                f"""
                 CREATE OR REPLACE SECRET s3_secret (
                     TYPE S3,
                     PROVIDER CREDENTIAL_CHAIN,
@@ -94,9 +103,11 @@ def setup_s3_connection(con, server):
                     USE_SSL '{use_ssl}',
                     URL_STYLE '{url_style}'
                 );
-            """)
+            """
+            )
         else:
-            con.sql(f"""
+            con.sql(
+                f"""
                 CREATE OR REPLACE SECRET s3_secret (
                     TYPE S3,
                     PROVIDER CREDENTIAL_CHAIN,
@@ -107,7 +118,8 @@ def setup_s3_connection(con, server):
                     USE_SSL '{use_ssl}',
                     URL_STYLE '{url_style}'
                 );
-            """)
+            """
+            )
 
     #     con.sql(f"""
     #                 SET s3_region = '{s3_region}';
@@ -133,13 +145,15 @@ def setup_gcs_connection(con, server):
     if secret is None:
         raise ValueError("Error: Environment variable DATACONTRACT_GCS_SECRET is not set")
 
-    con.sql(f"""
+    con.sql(
+        f"""
     CREATE SECRET gcs_secret (
         TYPE GCS,
         KEY_ID '{key_id}',
         SECRET '{secret}'
     );
-    """)
+    """
+    )
 
 
 def setup_azure_connection(con, server):
@@ -159,7 +173,8 @@ def setup_azure_connection(con, server):
     con.load_extension("azure")
 
     if storage_account is not None:
-        con.sql(f"""
+        con.sql(
+            f"""
         CREATE SECRET azure_spn (
             TYPE AZURE,
             PROVIDER SERVICE_PRINCIPAL,
@@ -168,9 +183,11 @@ def setup_azure_connection(con, server):
             CLIENT_SECRET '{client_secret}',
             ACCOUNT_NAME '{storage_account}'
         );
-        """)
+        """
+        )
     else:
-        con.sql(f"""
+        con.sql(
+            f"""
         CREATE SECRET azure_spn (
             TYPE AZURE,
             PROVIDER SERVICE_PRINCIPAL,
@@ -178,4 +195,5 @@ def setup_azure_connection(con, server):
             CLIENT_ID '{client_id}',
             CLIENT_SECRET '{client_secret}'
         );
-        """)
+        """
+        )

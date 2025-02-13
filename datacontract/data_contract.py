@@ -3,6 +3,7 @@ import logging
 import tempfile
 import typing
 
+import pandas as pd
 import yaml
 
 if typing.TYPE_CHECKING:
@@ -52,6 +53,7 @@ class DataContract:
         inline_definitions: bool = True,
         inline_quality: bool = True,
         ssl_verification: bool = True,
+        stream_data: pd.DataFrame | None = None,
     ):
         self._data_contract_file = data_contract_file
         self._data_contract_str = data_contract_str
@@ -64,6 +66,7 @@ class DataContract:
         self._inline_definitions = inline_definitions
         self._inline_quality = inline_quality
         self._ssl_verification = ssl_verification
+        self._stream_data = stream_data
         self.all_linters = {
             ExampleModelLinter(),
             QualityUsesSchemaLinter(),
@@ -200,7 +203,7 @@ class DataContract:
                 if server.format == "json" and server.type != "kafka":
                     check_jsonschema(run, data_contract, server)
 
-                check_soda_execute(run, data_contract, server, self._spark, tmp_dir)
+                check_soda_execute(run, data_contract, server, self._spark, tmp_dir, self._stream_data)
 
         except DataContractException as e:
             run.checks.append(

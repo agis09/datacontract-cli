@@ -1,0 +1,25 @@
+dataContractSpecification: 1.1.0
+id: inventory-events
+info:
+  title: Inventory Events
+  version: 0.0.1
+  owner: my-domain-team
+  contact:
+    email: jochen.christ@innoq.com
+servers:
+  inventory:
+    type: stream
+    delimiter: auto
+    format: pandas
+models:
+  inventory:
+    type: table
+    fields:
+      updated_at:
+        type: varchar
+      available:
+        type: integer
+      location:
+        type: varchar
+      sku:
+        type: varchar

@@ -248,6 +248,17 @@ def check_jsonschema(run: Run, data_contract: DataContractSpecification, server:
         # Process files based on server type
         if server.type == "local":
             process_local_file(run, server, schema, model_name, validate)
+        elif server.type == "stream":
+            run.checks.append(
+                Check(
+                    type="schema",
+                    name="Check that JSON has valid schema",
+                    model=model_name,
+                    result=ResultEnum.info,
+                    reason="JSON Schema check skipped for stream, as stream is currently not supported",
+                    engine="jsonschema",
+                )
+            )
         elif server.type == "s3":
             process_s3_file(run, server, schema, model_name, validate)
         elif server.type == "gcs":
