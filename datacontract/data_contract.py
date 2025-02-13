@@ -3,6 +3,7 @@ import logging
 import tempfile
 import typing
 
+import pandas as pd
 import yaml
 
 if typing.TYPE_CHECKING:
@@ -52,6 +53,7 @@ class DataContract:
         inline_definitions: bool = True,
         inline_quality: bool = True,
         ssl_verification: bool = True,
+        pandas_df: pd.DataFrame = None,
     ):
         self._data_contract_file = data_contract_file
         self._data_contract_str = data_contract_str
@@ -73,6 +75,7 @@ class DataContract:
             ValidFieldConstraintsLinter(),
             DescriptionLinter(),
         }
+        self._pandas_df = pandas_df
 
     @classmethod
     def init(cls, template: typing.Optional[str], schema: typing.Optional[str] = None) -> DataContractSpecification:
@@ -200,7 +203,7 @@ class DataContract:
                 if server.format == "json" and server.type != "kafka":
                     check_jsonschema(run, data_contract, server)
 
-                check_soda_execute(run, data_contract, server, self._spark, tmp_dir)
+                check_soda_execute(run, data_contract, server, self._spark, tmp_dir, self._pandas_df)
 
         except DataContractException as e:
             run.checks.append(

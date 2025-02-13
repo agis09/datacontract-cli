@@ -1,0 +1,23 @@
+dataContractSpecification: 1.1.0
+id: pandasdftest
+info:
+  title: pandasdftest
+  version: 0.0.1
+  owner: my-domain-team
+servers:
+  unittest:
+    type: pandasdf
+models:
+  my_table:
+    type: table
+    fields:
+      field_one:
+        type: varchar
+        required: true
+        unique: true
+        pattern: "[A-Za-z]{2}-\\d{3}-[A-Za-z]{2}$"
+      field_two:
+        type: int
+        minimum: 10
+      field_three:
+        type: timestamp

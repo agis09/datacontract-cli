@@ -206,6 +206,9 @@ A list of available extras:
 | Parquet                | `pip install datacontract-cli[parquet]`    |
 
 
+** for Pandas dataframe **
+Required Rust v1.65 and Python v3.11.8 to solve dependencies.
+
 
 ## Documentation
 

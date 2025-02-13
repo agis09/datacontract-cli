@@ -235,6 +235,21 @@
             "if": {
               "properties": {
                 "type": {
+                  "const": "pandasdf"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "$ref": "#/$defs/PandasdfServer"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
                   "const": "glue"
                 }
               },
@@ -1126,6 +1141,7 @@
             "snowflake",
             "databricks",
             "dataframe",
+            "pandasdf",
             "glue",
             "postgres",
             "oracle",
@@ -1439,6 +1455,13 @@
     "DataframeServer": {
       "type": "object",
       "title": "DataframeServer",
+      "required": [
+        "type"
+      ]
+    },
+    "PandasdfServer": {
+      "type": "object",
+      "title": "PandasdfServer",
       "required": [
         "type"
       ]

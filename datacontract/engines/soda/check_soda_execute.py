@@ -13,7 +13,7 @@ from datacontract.model.data_contract_specification import DataContractSpecifica
 from datacontract.model.run import Check, Log, ResultEnum, Run
 
 
-def check_soda_execute(run: Run, data_contract: DataContractSpecification, server: Server, spark, tmp_dir):
+def check_soda_execute(run: Run, data_contract: DataContractSpecification, server: Server, spark, tmp_dir, pandas_df):
     from soda.common.config_helper import ConfigHelper
 
     ConfigHelper.get_instance().upsert_value("send_anonymous_usage_stats", False)
@@ -78,6 +78,15 @@ def check_soda_execute(run: Run, data_contract: DataContractSpecification, serve
             logging.info("Use Spark to connect to data source")
             scan.add_spark_session(spark, data_source_name="datacontract-cli")
             scan.set_data_source_name("datacontract-cli")
+    elif server.type == "pandasdf":
+        if pandas_df is None:
+            run.log_warn(
+                "Server type pandasdf only works with the Python library and requires a pandas dataframe, "
+                "please provide one with the DataContract class"
+            )
+            return
+        scan.add_pandas_dataframe(data_contract.info.title, pandas_df=pandas_df, data_source_name="pandasdf")
+        scan.set_data_source_name("pandasdf")
     elif server.type == "kafka":
         if spark is None:
             spark = create_spark_session(tmp_dir)
