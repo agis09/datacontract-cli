@@ -23,3 +23,6 @@ models:
         type: varchar
       sku:
         type: varchar
+      null_column:
+        type: varchar
+        required: false

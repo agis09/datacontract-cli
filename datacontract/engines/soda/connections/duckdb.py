@@ -30,8 +30,14 @@ def get_duckdb_connection(data_contract, server, run: Run, stream_data=None):
 
         if server.type == "stream":
             if server.format == "pandas":
+                cast_queries = []
+                for col_name, col_info in model.fields.items():
+                    cast_queries.append(f"CAST({col_name} AS {col_info.type}) AS {col_name}")
+
+                cast_queries = ", ".join(cast_queries)
+
                 con.sql(f"""
-                            CREATE VIEW "{model_name}" AS SELECT * FROM {model_path}
+                            CREATE VIEW "{model_name}" AS SELECT {cast_queries} FROM {model_path}
                             """)
 
         if server.format == "json":
