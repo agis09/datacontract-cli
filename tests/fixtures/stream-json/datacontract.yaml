@@ -19,6 +19,11 @@ models:
         type: varchar
       available:
         type: integer
+        quality:
+          - type: sql
+            query: |
+              SELECT available FROM inventory
+            mustBeGreaterThan: 0
       location:
         type: varchar
       sku:
