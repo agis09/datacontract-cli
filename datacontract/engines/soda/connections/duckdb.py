@@ -11,8 +11,6 @@ def get_duckdb_connection(data_contract, server, run: Run, stream_data=None):
     path: str = ""
     if server.type == "local":
         path = server.path
-    if server.type == "stream":
-        path = "stream_data"
     if server.type == "s3":
         path = server.location
         setup_s3_connection(con, server)
@@ -37,7 +35,7 @@ def get_duckdb_connection(data_contract, server, run: Run, stream_data=None):
                 cast_queries = ", ".join(cast_queries)
 
                 con.sql(f"""
-                            CREATE VIEW "{model_name}" AS SELECT {cast_queries} FROM {model_path}
+                            CREATE VIEW "{model_name}" AS SELECT {cast_queries} FROM 'stream_data'
                             """)
 
         if server.format == "json":
