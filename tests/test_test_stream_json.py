@@ -1,4 +1,4 @@
-import pandas as pd
+import pyarrow as pa
 
 from datacontract.data_contract import DataContract
 
@@ -13,8 +13,11 @@ def test_test_stream_json():
         "sku": "9521582929054",
         "null_column": None,
     }
-    test_data = pd.DataFrame.from_dict(test_json, orient="index").T
-    data_contract = DataContract(data_contract_file=datacontract, stream_data=test_data)
+    pydict = {}
+    for key in test_json.keys():
+        pydict[key] = pa.array([test_json[key]])
+    pa_table = pa.Table.from_pydict(pydict)
+    data_contract = DataContract(data_contract_file=datacontract, stream_data=pa_table)
 
     run = data_contract.test()
 

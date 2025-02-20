@@ -29,11 +29,11 @@ def check_soda_execute(
     scan = Scan()
 
     if server.type in ["s3", "gcs", "azure", "local", "stream"]:
-        if server.format in ["json", "parquet", "csv", "delta", "pandas"]:
+        if server.format in ["json", "parquet", "csv", "delta", "pyarrow"]:
             run.log_info(f"Configuring engine soda-core to connect to {server.type} {server.format} with duckdb")
             con = get_duckdb_connection(data_contract, server, run, stream_data)
-            scan.add_duckdb_connection(duckdb_connection=con)
-            scan.set_data_source_name("duckdb")
+            scan.add_duckdb_connection(duckdb_connection=con, data_source_name=server.type)
+            scan.set_data_source_name(server.type)
         else:
             run.checks.append(
                 Check(

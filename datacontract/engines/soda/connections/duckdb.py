@@ -27,7 +27,7 @@ def get_duckdb_connection(data_contract, server, run: Run, stream_data=None):
         run.log_info(f"Creating table {model_name} for {model_path}")
 
         if server.type == "stream":
-            if server.format == "pandas":
+            if server.format == "pyarrow":
                 cast_queries = []
                 for col_name, col_info in model.fields.items():
                     cast_queries.append(f"CAST({col_name} AS {col_info.type}) AS {col_name}")

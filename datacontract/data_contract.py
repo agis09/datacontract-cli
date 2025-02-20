@@ -3,7 +3,7 @@ import logging
 import tempfile
 import typing
 
-import pandas as pd
+import pyarrow as pa
 import yaml
 
 if typing.TYPE_CHECKING:
@@ -53,7 +53,7 @@ class DataContract:
         inline_definitions: bool = True,
         inline_quality: bool = True,
         ssl_verification: bool = True,
-        stream_data: pd.DataFrame | None = None,
+        stream_data: pa.Table | None = None,
     ):
         self._data_contract_file = data_contract_file
         self._data_contract_str = data_contract_str

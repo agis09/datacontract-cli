@@ -10,7 +10,7 @@ servers:
   inventory:
     type: stream
     delimiter: auto
-    format: pandas
+    format: pyarrow
 models:
   inventory:
     type: table
