@@ -1715,7 +1715,7 @@
           "type": "string",
           "description": "The format of the file(s)",
           "examples": [
-            "pandas"
+            "pyarrow"
           ]
         }
       },
